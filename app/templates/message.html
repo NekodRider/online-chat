@@ -1,0 +1,88 @@
+<html>
+  <head>
+    {% if title %}
+    <title>{{title}}</title>
+    {% endif %}
+      <style>
+          html{
+              text-align: center;
+              font-size: calc(100vw/3.75);
+              height: 100%;
+          }
+          body{
+              margin: 0 auto;
+              height: 100%;
+              font-size: 0.2rem;
+          }
+          #txt{
+                line-height: 0.3rem;
+          }
+          #input{
+              text-align:center;
+              margin-top: 100px;
+              height: 0.3rem;
+              font-size: 0.2rem;
+          }
+          #input input{
+              height: 100%;
+              font-size: 0.2rem;
+          }
+      </style>
+  </head>
+  <body>
+  <div id="input">
+            <input id="typein" name="content" type="text"/>
+            <input type="submit" onclick="fresh(1)"/>
+      </div>
+        <p onload="fresh(0);">Content:
+            <br><span id="txt">
+            {% for con in content %}
+            {{ con['content'] }}<br>
+            {% endfor %}
+        </span></p>
+<script type=text/javascript src="{{
+  url_for('static', filename='jquery.js') }}"></script>
+<script>window.jQuery || document.write('<script src="{{
+  url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+  </body>
+<script type="text/javascript">
+          var  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+          var timer,flag=0,ct=" ";
+          function ajaxForm(ct) {
+              $.ajax( {
+                        type : "POST",
+                        url : $SCRIPT_ROOT,
+                        dataType : "json",
+                        data : {
+                            'content':ct
+                        },
+                        error: function( XMLHttpRequest, textStatus, errorThrown , data) {
+                            alert(XMLHttpRequest.status+'..........'+ XMLHttpRequest.readyState  +'..........'+textStatus);
+                        },
+                        success : function ( data, textStatus ,response ) {
+                            str="";
+                                //alert(JSON.stringify((data.content)[1].content)+(data.content).length);
+                            for (i=0;i<(data.content).length;i++){
+                                //alert((data.content)[i].content);
+                                str+=(data.content)[i].content+'<br>';
+                            }
+                            $( "#txt" ).html(str);
+                            if(ct!=" ")
+                                $( "#typein" ).val("");
+                        }
+                    } );
+          }
+          function fresh(flag) {
+              clearInterval(timer);
+              if(flag==1){
+                  ct=$( "input[name=content]" ).val();
+              }
+              else{
+                  ct=" ";
+              }
+              ajaxForm(ct);
+              timer=setInterval('fresh(0);',5000);
+          }
+          fresh(0);
+        </script>
+</html>
