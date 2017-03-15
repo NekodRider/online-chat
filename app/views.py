@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect,request,session,url_for,jsonify
 from app import app,data
-@app.route('/',methods=["POST","GET"])
+@app.route('/today',methods=["POST","GET"])
 def message():
     content=data.getPost()
     if request.method == "POST" and request.headers.has_key("X-Requested-With"):
@@ -23,3 +23,6 @@ def message():
         return render_template("message.html",
                                 title='Message',
                                content=content)
+@app.route('/',methods=["GET"])
+def index():
+    return app.send_static_file('index.html')
