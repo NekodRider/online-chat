@@ -1,28 +1,15 @@
 from flask import render_template, flash, redirect,request,session,url_for,jsonify
 from app import app,data
-@app.route('/today',methods=["POST","GET"])
+
+
+@app.route('/', methods=["POST", "GET"])
 def message():
     content=data.getPost()
-    if request.method == "POST" and request.headers.has_key("X-Requested-With"):
-        new_content = request.form.get("content", "null")
-        data.Post(new_content)
+    if request.method == "POST":
+        data.Post(request.get_data(as_text=True))
         content = data.getPost()
         return jsonify(content=content)
-        #return render_template("message.html",
-        #                          title='Message',
-        #                          content=content)
-    elif request.method == "POST":
-        new_content = request.form.get("content", "null")
-        data.Post(new_content)
-        content = data.getPost()
-        return jsonify(content=content)
-        #return render_template("message.html",
-        #                          title='Message',
-        #                          content=content)
     else:
         return render_template("message.html",
                                 title='Message',
                                content=content)
-@app.route('/',methods=["GET"])
-def index():
-    return app.send_static_file('index.html')
